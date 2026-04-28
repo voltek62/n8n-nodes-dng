@@ -1,0 +1,33 @@
+{
+  "id": "qa-human-validation",
+  "title": "QA Workflow with Human Validation",
+  "description": "Analyze a document with an LLM, detect quality issues, request human validation if the score is low, apply corrections, and compare before/after.",
+  "difficulty": "Expert",
+  "category": "Quality & review",
+  "time_limit_minutes": 25,
+  "available_nodes": [
+    "File",
+    "LLM",
+    "Conditional Node",
+    "Human_in_the_Loop",
+    "Diff Checker",
+    "Output"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place all mandatory nodes for the scenario."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Build the right sequence and branch connections."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize strict configuration",
+      "instructions": "Configure all required params and finalize outputs."
+    }
+  ]
+}

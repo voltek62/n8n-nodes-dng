@@ -1,0 +1,26 @@
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Node
+node_modules/
+nodes-dng/node_modules/
+nodes-dng/dist/
+*.log
+*.tgz
+
+# Env / secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Server-side scoring (private, deployed to n8n cloud — NEVER push to public repo)
+server/
+
+# Legacy / scratch
+.next/
+__pycache__/
+exam.db
+*.db
+.git.backup*

@@ -1,0 +1,32 @@
+{
+  "id": "sentiment-routing",
+  "title": "Sentiment Analysis with Routing",
+  "description": "Analyze the sentiment of a customer text, then automatically route: email alert if negative, archive if positive.",
+  "difficulty": "Intermediate",
+  "category": "Flow logic",
+  "time_limit_minutes": 15,
+  "available_nodes": [
+    "Text",
+    "LLM",
+    "Conditional Node",
+    "Email Sender",
+    "Output"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place all mandatory nodes for the scenario."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Build the right sequence and branch connections."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize strict configuration",
+      "instructions": "Configure all required params and finalize outputs."
+    }
+  ]
+}

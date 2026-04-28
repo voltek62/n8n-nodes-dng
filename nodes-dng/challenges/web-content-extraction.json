@@ -1,0 +1,32 @@
+{
+  "id": "web-content-extraction",
+  "title": "Web Content Extraction and Cleanup",
+  "description": "Build a pipeline that fetches web page content, converts it to clean markdown, then extracts structured information using an LLM.",
+  "difficulty": "Easy",
+  "category": "Data extraction",
+  "time_limit_minutes": 12,
+  "available_nodes": [
+    "Url",
+    "Web Scraper",
+    "HTML to Markdown",
+    "LLM",
+    "Output"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place all mandatory nodes for the scenario."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Build the right sequence and branch connections."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize strict configuration",
+      "instructions": "Configure all required params and finalize outputs."
+    }
+  ]
+}

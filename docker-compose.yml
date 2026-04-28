@@ -1,0 +1,27 @@
+# Self-hosted n8n with the DNG exam community node pack.
+#
+# This stack is the CANDIDATE side only. It runs n8n locally so the candidate can
+# build a workflow on the canvas and submit it via the `DNG Submit Level` node.
+# All scoring happens on the DraftNGoal cloud instance — no scoring workflow,
+# no SMTP, no admin email, no exam secret here.
+#
+# Usage (from this directory):
+#   1) cd nodes-dng && npm install && npm run build
+#   2) cd ..       && docker compose up -d
+#   3) Open http://localhost:5678 and finish the owner setup.
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_CUSTOM_EXTENSIONS: /data/custom
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./nodes-dng:/data/custom/n8n-nodes-dng:ro
+
+volumes:
+  n8n_data: {}

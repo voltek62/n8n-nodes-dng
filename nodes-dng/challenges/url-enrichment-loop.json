@@ -1,0 +1,35 @@
+{
+  "id": "url-enrichment-loop",
+  "title": "URL Enrichment Loop",
+  "description": "Take a list of URLs separated by newlines, iterate over each with a Loop Node to scrape and analyze the content, then aggregate the results.",
+  "difficulty": "Advanced",
+  "category": "Automation",
+  "time_limit_minutes": 20,
+  "available_nodes": [
+    "Text",
+    "Create_List",
+    "Loop Node",
+    "Web Scraper",
+    "HTML to Markdown",
+    "LLM",
+    "Join_List",
+    "Output"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place all mandatory nodes for the scenario."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Build the right sequence and branch connections."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize strict configuration",
+      "instructions": "Configure all required params and finalize outputs."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "name": "n8n-nodes-dng",
+  "version": "1.0.0",
+  "description": "DraftNGoal community node pack for n8n: 41 DNG Builder mirror nodes + DNG Submit Level. Build a workflow on the canvas and submit it to the official DraftNGoal cloud scoring webhook.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "dist",
+    "challenges"
+  ],
+  "homepage": "https://dng.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voltek62/n8n-nodes-dng.git"
+  },
+  "bugs": {
+    "url": "https://github.com/voltek62/n8n-nodes-dng/issues"
+  },
+  "author": "Vincent Terrasi <hello@dng.ai> (https://dng.ai)",
+  "engines": {
+    "node": ">=20"
+  },
+  "n8n": {
+    "credentials": [
+      "dist/credentials/DngScoringWebhook.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/DngSubmitLevel/DngSubmitLevel.node.js",
+      "dist/nodes/mirror/DngAiCode.node.js",
+      "dist/nodes/mirror/DngAgent.node.js",
+      "dist/nodes/mirror/DngCsvAnalyzer.node.js",
+      "dist/nodes/mirror/DngConditionalNode.node.js",
+      "dist/nodes/mirror/DngCreateList.node.js",
+      "dist/nodes/mirror/DngDate.node.js",
+      "dist/nodes/mirror/DngDiffChecker.node.js",
+      "dist/nodes/mirror/DngEmailSender.node.js",
+      "dist/nodes/mirror/DngFailNode.node.js",
+      "dist/nodes/mirror/DngFile.node.js",
+      "dist/nodes/mirror/DngFilterList.node.js",
+      "dist/nodes/mirror/DngFindAndReplace.node.js",
+      "dist/nodes/mirror/DngGoogleSearchConsole.node.js",
+      "dist/nodes/mirror/DngGoogleSheets.node.js",
+      "dist/nodes/mirror/DngGoogleSheetsReader.node.js",
+      "dist/nodes/mirror/DngGoogleDocsWriter.node.js",
+      "dist/nodes/mirror/DngHtmlCleaner.node.js",
+      "dist/nodes/mirror/DngHtmlToMarkdown.node.js",
+      "dist/nodes/mirror/DngHttpRequest.node.js",
+      "dist/nodes/mirror/DngHumanInTheLoop.node.js",
+      "dist/nodes/mirror/DngImageToText.node.js",
+      "dist/nodes/mirror/DngJsonPathExtractor.node.js",
+      "dist/nodes/mirror/DngJoinList.node.js",
+      "dist/nodes/mirror/DngLlm.node.js",
+      "dist/nodes/mirror/DngLoopNode.node.js",
+      "dist/nodes/mirror/DngMergeWithTemplate.node.js",
+      "dist/nodes/mirror/DngMergeLists.node.js",
+      "dist/nodes/mirror/DngOutput.node.js",
+      "dist/nodes/mirror/DngPickListItem.node.js",
+      "dist/nodes/mirror/DngSelect.node.js",
+      "dist/nodes/mirror/DngSerperDev.node.js",
+      "dist/nodes/mirror/DngShortText.node.js",
+      "dist/nodes/mirror/DngSplit.node.js",
+      "dist/nodes/mirror/DngStaticText.node.js",
+      "dist/nodes/mirror/DngTagExtractor.node.js",
+      "dist/nodes/mirror/DngText.node.js",
+      "dist/nodes/mirror/DngTextToImage.node.js",
+      "dist/nodes/mirror/DngUrl.node.js",
+      "dist/nodes/mirror/DngWebScraper.node.js",
+      "dist/nodes/mirror/DngWordCounter.node.js",
+      "dist/nodes/mirror/DngWordpressPostCreate.node.js"
+    ]
+  },
+  "scripts": {
+    "build": "npm run generate && npm run sanitize && tsc",
+    "generate": "npx --yes tsx scripts/generate-mirror-nodes.ts",
+    "sanitize": "node scripts/sanitize-challenges.mjs",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "n8n-nodes",
+    "dng",
+    "draftngoal",
+    "exam",
+    "workflow",
+    "ai",
+    "agents"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "n8n-workflow": "1.82.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

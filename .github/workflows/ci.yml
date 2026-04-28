@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & verify package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: nodes-dng/package-lock.json
+
+      - name: Install dependencies
+        working-directory: nodes-dng
+        run: npm ci
+
+      - name: Build community node pack
+        working-directory: nodes-dng
+        run: npm run build
+
+      - name: Type-check
+        working-directory: nodes-dng
+        run: npm run lint
+
+      - name: Pack tarball (dry run)
+        working-directory: nodes-dng
+        run: npm pack --dry-run
+
+      - name: Verify no answers leak in challenges
+        run: |
+          set -e
+          if grep -RIlE 'ideal_workflow|grading_rubric|critical_criteria|required_nodes' nodes-dng/challenges/; then
+            echo "::error::Reference solution / rubric leaked into the public challenges/ directory."
+            exit 1
+          fi
+
+      - name: Verify private server tree is absent
+        run: |
+          set -e
+          if [ -d server ]; then
+            echo "::error::server/ directory must NOT exist in the public repo (it is gitignored, but seems committed here)."
+            exit 1
+          fi

@@ -1,0 +1,31 @@
+{
+  "id": "competitive-intelligence-agent",
+  "title": "Competitive Intelligence Agent",
+  "description": "Deploy an AI agent that actively researches information about a competitor, then have a dedicated LLM synthesize the results into an executive report.",
+  "difficulty": "Advanced",
+  "category": "AI agents",
+  "time_limit_minutes": 20,
+  "available_nodes": [
+    "Text",
+    "Agent",
+    "LLM",
+    "Output"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place all mandatory nodes for the scenario."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Build the right sequence and branch connections."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize strict configuration",
+      "instructions": "Configure all required params and finalize outputs."
+    }
+  ]
+}
