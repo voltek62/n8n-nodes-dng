@@ -109,17 +109,28 @@ function n8nNodeToDng(
 }
 
 function getFullWorkflow(ef: IExecuteFunctions): { nodes: INode[]; connections: IConnections } {
-	try {
-		const w = (ef as IExecuteFunctions & { getWorkflowDataProxy: (i: number) => { $workflow: unknown } })
-			.getWorkflowDataProxy(0).$workflow as { nodes: INode[]; connections: IConnections } | undefined;
-		if (w?.nodes?.length) {
-			return w;
-		}
-	} catch { /* getWorkflowDataProxy not available in some tests */ }
+	// IExecuteFunctions has no public API that returns the full canvas:
+	//   - getWorkflow()                   → IWorkflowMetadata { id, name, active }
+	//   - getWorkflowDataProxy(0).$workflow → proxy exposing only id/name/active
+	// n8n's runtime however keeps the loaded Workflow instance on the execution
+	// context, where:
+	//   - .nodes                  is INodes, i.e. Record<name, INode>
+	//   - .connectionsBySourceNode is the canonical IConnections (by source name)
+	// We read it via a deliberate `any` cast and normalise both shapes.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const w2 = (ef as any).context?.getWorkflowData?.() ?? (ef as any).workflow;
-	if (w2?.nodes?.length) {
-		return w2 as { nodes: INode[]; connections: IConnections };
+	const w = (ef as any).workflow as
+		| {
+			nodes?: Record<string, INode> | INode[];
+			connectionsBySourceNode?: IConnections;
+			connections?: IConnections;
+		}
+		| undefined;
+	if (w?.nodes) {
+		const nodes = Array.isArray(w.nodes) ? w.nodes : (Object.values(w.nodes) as INode[]);
+		const connections = (w.connectionsBySourceNode ?? w.connections ?? {}) as IConnections;
+		if (nodes.length) {
+			return { nodes, connections };
+		}
 	}
 	return { nodes: [], connections: {} as IConnections };
 }
