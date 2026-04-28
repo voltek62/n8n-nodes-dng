@@ -90,25 +90,6 @@ solution is **not** in those files. It lives only on the DraftNGoal cloud.
 | `qa-human-validation` | Expert | 25 min |
 | `full-seo-audit` | Expert | 30 min |
 
-## Anti-cheat — what this package does NOT contain
-
-- ❌ No `ideal_workflow` (reference solution) for any challenge.
-- ❌ No `grading_rubric` (scoring weights, thresholds).
-- ❌ No `required_nodes` / `critical_criteria` per step.
-- ❌ No way to compute a passing score locally.
-
-The cloud scoring service:
-
-- Looks up the challenge by `id` from its own private store. Anything you
-  inject into the request body other than `id` is ignored.
-- Requires both `X-DNG-Secret` (cohort secret) and `X-DNG-Exam-Token`
-  (per-candidate). Tokens are bound to a name/email server-side, so you cannot
-  submit under someone else's identity.
-- Emails a full audit (audit id, last-4 of token, ideal vs submitted JSON) to
-  DraftNGoal admins.
-
-If you find a way around this, please follow [SECURITY.md](SECURITY.md).
-
 ## Install via the n8n Community Nodes UI (alternative)
 
 If you run n8n cloud or a self-hosted n8n that allows community nodes:
