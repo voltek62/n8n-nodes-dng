@@ -1,0 +1,47 @@
+{
+  "id": "lead-routing",
+  "title": "Lead Priority Routing",
+  "description": "Build a workflow that ingests a lead JSON via webhook, normalizes fields, routes urgent leads to email + Slack HTTP notification, sends standard leads to Google Sheets, merges both branches, consolidates with a Code node, and responds to the webhook.",
+  "difficulty": "Intermediate",
+  "category": "Flow logic",
+  "time_limit_minutes": 20,
+  "available_node_types": [
+    "n8n-nodes-base.webhook",
+    "n8n-nodes-base.set",
+    "n8n-nodes-base.if",
+    "n8n-nodes-base.emailSend",
+    "n8n-nodes-base.httpRequest",
+    "n8n-nodes-base.googleSheets",
+    "n8n-nodes-base.merge",
+    "n8n-nodes-base.code",
+    "n8n-nodes-base.respondToWebhook"
+  ],
+  "available_node_displayNames": [
+    "Webhook",
+    "Set",
+    "If",
+    "Send Email",
+    "HTTP Request",
+    "Google Sheets",
+    "Merge",
+    "Code",
+    "Respond to Webhook"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Include webhook intake, normalization, conditional routing, integrations, merge, code consolidation, and response."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect branches and merge",
+      "instructions": "Wire urgent vs standard branches into Merge, then Code, then Respond to Webhook."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize configuration",
+      "instructions": "Tune IF condition on priority, outbound URLs, sheet append, merge mode append, and consolidation logic."
+    }
+  ]
+}

@@ -6,7 +6,7 @@
 # no SMTP, no admin email, no exam secret here.
 #
 # Usage (from this directory):
-#   1) cd nodes-dng && npm install && npm run build
+#   1) cd nodes-dng && npm install && npm run build   # DNG Submit Level + credential only
 #   2) cd ..       && docker compose up -d
 #   3) Open http://localhost:5678 and finish the owner setup.
 services:

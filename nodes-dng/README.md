@@ -5,21 +5,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Official **n8n community node pack** for the [DraftNGoal](https://dng.ai)
-exam. Install it in your own n8n, build a workflow on the canvas, and submit it
+exam. Install it in your own n8n, build a workflow with **native n8n nodes** on the canvas, and submit it
 to the official scoring webhook hosted on the DraftNGoal n8n cloud — your score
 and detailed feedback come back as the node's output.
 
 The pack ships:
 
-- **41 mirror nodes** that map DNG Builder blocks to native‑looking n8n nodes
-  (`Text`, `LLM`, `Output`, `Agent`, `HTTP Request`, …).
-- **DNG Submit Level** — the only node that talks to the cloud. It packages
-  your canvas as DNG JSON, signs the request with your shared secret + personal
-  exam token, and posts it to the scoring webhook.
-- A **sanitized challenge catalogue** ([`nodes-dng/challenges/`](nodes-dng/challenges/)):
-  description, available nodes, time limit, sanitized step blueprint. The
+- **DNG Submit Level** — submits your workflow graph (node `type`, `parameters`, connections) to the scorer.
+- **DNG Scoring Webhook** credential — URL, cohort shared secret, personal exam token.
+- A **sanitized challenge catalogue** ([`challenges/`](challenges/)):
+  description, suggested node types (`available_node_types`), time limit, sanitized step blueprint. The
   reference solutions and grading rubrics are **never shipped** with this
   package.
+
+**v3.x** expects **native n8n node types** in submissions. Upgrade to **n8n-nodes-dng ≥ 3.0.0** so the cloud accepts your runs.
 
 ## Quick start (Docker)
 
@@ -27,7 +26,7 @@ The pack ships:
 git clone https://github.com/voltek62/n8n-nodes-dng.git
 cd n8n-nodes-dng
 
-# 1. Build the community node pack (41 mirrors + DNG Submit Level)
+# 1. Build the community node pack (DNG Submit Level + credential)
 (cd nodes-dng && npm install && npm run build)
 
 # 2. Boot a local n8n that auto-loads the pack
@@ -43,11 +42,11 @@ open http://localhost:5678
    - **Webhook URL**: keep the default `https://draftngoal.app.n8n.cloud/webhook/dng-score`.
    - **Shared secret**: cohort secret — sent to you by email after you sign up at <https://dng.ai>.
    - **Exam token (per candidate)**: personal token — also sent by email.
-2. Create a workflow:
+2. Create a workflow using **standard n8n nodes**:
 
    ```
-   Manual Trigger
-       └── DNG mirror nodes (e.g. Text → LLM → Output)
+   Manual Trigger (or Webhook)
+       └── Your native n8n nodes …
               └── DNG Submit Level
    ```
 
@@ -59,7 +58,7 @@ open http://localhost:5678
    {
      "ok": true,
      "audit_id": "…",
-     "challenge_id": "summarization-pipeline",
+     "challenge_id": "quick-summarize",
      "overall_score": 92.5,
      "passed": true,
      "criteria_scores": [ … ],
@@ -72,31 +71,23 @@ open http://localhost:5678
 
 ## Available challenges
 
-The candidate-facing catalogue is in [`nodes-dng/challenges/index.json`](nodes-dng/challenges/index.json).
+The candidate-facing catalogue is in [`challenges/index.json`](challenges/index.json).
 Browse the per-challenge description and step blueprint in
-[`nodes-dng/challenges/<id>.json`](nodes-dng/challenges/) — the reference
+[`challenges/<id>.json`](challenges/) — the reference
 solution is **not** in those files. It lives only on the DraftNGoal cloud.
 
 | id | difficulty | duration |
 |----|------------|---------:|
-| `summarization-pipeline` | Easy | 10 min |
-| `web-content-extraction` | Easy | 12 min |
-| `sentiment-routing` | Intermediate | 15 min |
-| `csv-enrichment` | Intermediate | 15 min |
-| `web-research-augmented` | Intermediate | 15 min |
-| `competitive-intelligence-agent` | Advanced | 20 min |
-| `url-enrichment-loop` | Advanced | 20 min |
-| `wordpress-publishing-pipeline` | Advanced | 20 min |
-| `qa-human-validation` | Expert | 25 min |
-| `full-seo-audit` | Expert | 30 min |
+| `quick-summarize` | Easy | 10 min |
+| `lead-routing` | Intermediate | 20 min |
+| `research-agent` | Expert | 45 min |
 
 ## Install via the n8n Community Nodes UI (alternative)
 
 If you run n8n cloud or a self-hosted n8n that allows community nodes:
 
 1. **Settings → Community nodes → Install** → enter `n8n-nodes-dng`.
-2. Confirm the install. Mirror nodes and **DNG Submit Level** appear in the
-   node panel.
+2. Confirm the install. **DNG Submit Level** appears after reload.
 3. Configure the **DNG Scoring Webhook** credential (same fields as above).
 
 ## Repository layout
@@ -104,11 +95,10 @@ If you run n8n cloud or a self-hosted n8n that allows community nodes:
 ```
 .
 ├── nodes-dng/             # the published npm package (n8n-nodes-dng)
-│   ├── nodes/             # DNG Submit Level + 41 mirror nodes
+│   ├── nodes/             # DNG Submit Level only
 │   ├── credentials/       # DNG Scoring Webhook credential type
 │   ├── challenges/        # sanitized public catalogue (no answers)
-│   ├── source/            # canonical DNG node definitions
-│   └── scripts/           # mirror generator + challenge sanitizer
+│   └── scripts/           # challenge sanitizer
 ├── docker-compose.yml     # local n8n for candidates
 ├── .github/               # CI, release, dependabot, issue templates
 ├── LICENSE                # MIT
@@ -125,7 +115,7 @@ operates that side, on n8n cloud at <https://draftngoal.app.n8n.cloud>.
 ```bash
 cd nodes-dng
 npm install
-npm run build      # generate mirrors + sanitize challenges + tsc
+npm run build      # sanitize challenges + tsc
 npm run lint       # type-check
 npm pack --dry-run # see what gets shipped to npm
 ```
@@ -138,4 +128,4 @@ npm pack --dry-run # see what gets shipped to npm
 
 ## License
 
-[MIT](LICENSE) © Vincent Terrasi / DraftNGoal.
+[MIT](../LICENSE) © Vincent Terrasi / DraftNGoal.

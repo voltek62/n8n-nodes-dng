@@ -1,72 +1,23 @@
 [
   {
-    "id": "competitive-intelligence-agent",
-    "title": "Competitive Intelligence Agent",
-    "difficulty": "Advanced",
-    "category": "AI agents",
+    "id": "lead-routing",
+    "title": "Lead Priority Routing",
+    "difficulty": "Intermediate",
+    "category": "Flow logic",
     "time_limit_minutes": 20
   },
   {
-    "id": "csv-enrichment",
-    "title": "CSV Data Enrichment",
-    "difficulty": "Intermediate",
-    "category": "Data & analytics",
-    "time_limit_minutes": 15
-  },
-  {
-    "id": "full-seo-audit",
-    "title": "Complete Technical SEO Audit",
-    "difficulty": "Expert",
-    "category": "SEO & performance",
-    "time_limit_minutes": 30
-  },
-  {
-    "id": "qa-human-validation",
-    "title": "QA Workflow with Human Validation",
-    "difficulty": "Expert",
-    "category": "Quality & review",
-    "time_limit_minutes": 25
-  },
-  {
-    "id": "sentiment-routing",
-    "title": "Sentiment Analysis with Routing",
-    "difficulty": "Intermediate",
-    "category": "Flow logic",
-    "time_limit_minutes": 15
-  },
-  {
-    "id": "summarization-pipeline",
-    "title": "Structured Summary Pipeline",
+    "id": "quick-summarize",
+    "title": "Quick HTTP Summary",
     "difficulty": "Easy",
     "category": "Fundamentals",
     "time_limit_minutes": 10
   },
   {
-    "id": "url-enrichment-loop",
-    "title": "URL Enrichment Loop",
-    "difficulty": "Advanced",
-    "category": "Automation",
-    "time_limit_minutes": 20
-  },
-  {
-    "id": "web-content-extraction",
-    "title": "Web Content Extraction and Cleanup",
-    "difficulty": "Easy",
-    "category": "Data extraction",
-    "time_limit_minutes": 12
-  },
-  {
-    "id": "web-research-augmented",
-    "title": "AI-Augmented Web Research",
-    "difficulty": "Intermediate",
-    "category": "Search & SERP",
-    "time_limit_minutes": 15
-  },
-  {
-    "id": "wordpress-publishing-pipeline",
-    "title": "WordPress Publishing Pipeline",
-    "difficulty": "Advanced",
-    "category": "Content & publishing",
-    "time_limit_minutes": 20
+    "id": "research-agent",
+    "title": "Multi-URL Research Agent",
+    "difficulty": "Expert",
+    "category": "AI agents",
+    "time_limit_minutes": 45
   }
 ]

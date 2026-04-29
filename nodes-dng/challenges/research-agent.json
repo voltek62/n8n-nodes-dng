@@ -1,0 +1,43 @@
+{
+  "id": "research-agent",
+  "title": "Multi-URL Research Agent",
+  "description": "Build an advanced workflow: accept URLs via webhook, expand them into items with Code, fetch each page over HTTP, extract readable text with Code, run a LangChain AI Agent with an OpenAI Chat Model, aggregate results, and return JSON via Respond to Webhook.",
+  "difficulty": "Expert",
+  "category": "AI agents",
+  "time_limit_minutes": 45,
+  "available_node_types": [
+    "n8n-nodes-base.webhook",
+    "n8n-nodes-base.code",
+    "n8n-nodes-base.httpRequest",
+    "@n8n/n8n-nodes-langchain.agent",
+    "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+    "n8n-nodes-base.aggregate",
+    "n8n-nodes-base.respondToWebhook"
+  ],
+  "available_node_displayNames": [
+    "Webhook",
+    "Code",
+    "HTTP Request",
+    "AI Agent",
+    "OpenAI Chat Model",
+    "Aggregate",
+    "Respond to Webhook"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Include webhook, validation/expansion Code, HTTP fetch, parsing Code, LangChain agent + chat model, aggregate, and response."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Wire fetch and parse, agent chain, aggregation, and HTTP response."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize configuration",
+      "instructions": "Tune validation, URLs, prompts, and aggregation fields."
+    }
+  ]
+}

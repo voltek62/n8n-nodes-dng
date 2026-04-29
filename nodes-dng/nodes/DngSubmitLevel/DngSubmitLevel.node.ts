@@ -10,24 +10,13 @@ import type {
 	INodeTypeDescription,
 } from "n8n-workflow";
 import { NodeConnectionType, NodeOperationError } from "n8n-workflow";
-import { DNG_NODE_PACKAGE, DNG_TYPE_NAME_TO_LABEL } from "../../generated/dng-lookup";
 
-type DngMeta = (typeof DNG_TYPE_NAME_TO_LABEL)[string];
+const DNG_NODE_PACKAGE = "n8n-nodes-dng";
+const CLIENT_VERSION = "3.0.0";
 
-const NUM_PARAM_KEYS = new Set([
-	"temperature",
-	"maxOutputTokens",
-	"maxIterations",
-	"numResults",
-	"index",
-	"delayBetweenIterations",
-]);
-
-const CLIENT_VERSION = "2.0.0";
-
-function getSuffixFromN8nType(t: string): string {
-	const p = t.split(".");
-	return p.length ? p[p.length - 1]! : t;
+function isDngSubmitNodeType(t: string): boolean {
+	const s = t.toLowerCase();
+	return s.includes("dngsubmitlevel") || s.includes("dngsubmitl");
 }
 
 function buildEdges(connections: IConnections | IDataObject | undefined | null): { source: string; target: string }[] {
@@ -54,76 +43,39 @@ function buildEdges(connections: IConnections | IDataObject | undefined | null):
 	return out;
 }
 
-function normalizeParam(
-	name: string,
-	v: unknown,
-): { name: string; value: string | number | null } {
-	if (v === null || v === undefined) {
-		return { name, value: null };
+function cloneParams(parameters: IDataObject): IDataObject {
+	try {
+		return JSON.parse(JSON.stringify(parameters)) as IDataObject;
+	} catch {
+		return { ...parameters };
 	}
-	if (typeof v === "number" && Number.isFinite(v)) {
-		return { name, value: v };
-	}
-	if (typeof v === "string") {
-		if (NUM_PARAM_KEYS.has(name) && /^-?[\d.]+$/u.test(v.trim())) {
-			return { name, value: parseFloat(v) };
-		}
-		return { name, value: v };
-	}
-	if (typeof v === "boolean") {
-		return { name, value: v ? "true" : "false" };
-	}
-	return { name, value: JSON.stringify(v) };
 }
 
-function n8nNodeToDng(
+function n8nNodeToSubmission(
 	node: INode,
-	parameters: IDataObject,
-): { id: string; type: string; data: Record<string, unknown> } | null {
+): { id: string; type: string; typeVersion: number; parameters: IDataObject } | null {
 	const t = String(node.type ?? "");
-	if (t.toLowerCase().includes("dngsubmitlevel") || t.toLowerCase().includes("dngsubmitl")) {
-		return null;
-	}
-	const suffix = getSuffixFromN8nType(t);
-	const meta: DngMeta | undefined = DNG_TYPE_NAME_TO_LABEL[suffix];
-	if (!meta) {
+	if (!t || isDngSubmitNodeType(t)) {
 		return null;
 	}
 	const name = String(node.name ?? "node");
-	const inputParams: { name: string; value: string | number | null }[] = [];
-	for (const k of Object.keys(parameters)) {
-		if (k === "dngNotice") continue;
-		inputParams.push(normalizeParam(k, parameters[k]));
-	}
+	const parameters = (node.parameters ?? {}) as IDataObject;
 	return {
 		id: name,
-		type: "customNode",
-		data: {
-			label: meta.label,
-			name,
-			type: meta.dngType,
-			category: meta.category,
-			inputParams,
-		},
+		type: t,
+		typeVersion: typeof node.typeVersion === "number" ? node.typeVersion : 1,
+		parameters: cloneParams(parameters),
 	};
 }
 
 function getFullWorkflow(ef: IExecuteFunctions): { nodes: INode[]; connections: IConnections } {
-	// IExecuteFunctions has no public API that returns the full canvas:
-	//   - getWorkflow()                   → IWorkflowMetadata { id, name, active }
-	//   - getWorkflowDataProxy(0).$workflow → proxy exposing only id/name/active
-	// n8n's runtime however keeps the loaded Workflow instance on the execution
-	// context, where:
-	//   - .nodes                  is INodes, i.e. Record<name, INode>
-	//   - .connectionsBySourceNode is the canonical IConnections (by source name)
-	// We read it via a deliberate `any` cast and normalise both shapes.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const w = (ef as any).workflow as
 		| {
-			nodes?: Record<string, INode> | INode[];
-			connectionsBySourceNode?: IConnections;
-			connections?: IConnections;
-		}
+				nodes?: Record<string, INode> | INode[];
+				connectionsBySourceNode?: IConnections;
+				connections?: IConnections;
+		  }
 		| undefined;
 	if (w?.nodes) {
 		const nodes = Array.isArray(w.nodes) ? w.nodes : (Object.values(w.nodes) as INode[]);
@@ -157,7 +109,7 @@ const CHALLENGE_INDEX = loadIndexJson();
 const CHALLENGE_IDS = new Set(CHALLENGE_INDEX.map((c) => c.id));
 const CHALLENGE_ID_OPTIONS: { name: string; value: string }[] = (() => {
 	if (!CHALLENGE_INDEX.length) {
-		return [{ name: "summarization-pipeline", value: "summarization-pipeline" }];
+		return [{ name: "quick-summarize (Easy · 10 min)", value: "quick-summarize" }];
 	}
 	return CHALLENGE_INDEX.map((c) => ({
 		name: c.time_limit_minutes ? `${c.title} (${c.difficulty ?? ""} · ${c.time_limit_minutes} min)` : c.title,
@@ -173,17 +125,17 @@ export class DngSubmitLevel implements INodeType {
 		name: "dngSubmitLevel",
 		group: ["transform"],
 		subtitle: "={{$parameter[\"challengeId\"]}}",
-		version: 2,
+		version: 3,
 		defaults: { name: "DNG Submit" },
 		description:
-			"Sends the candidate's canvas (DNG nodes only) and identity to the DNG scoring webhook hosted on the official n8n cloud. The challenge content is fetched server-side; only the challenge id is transmitted.",
+			"Sends the workflow canvas (native n8n nodes only; credentials stripped server-side from reference) and identity to the DraftNGoal scoring webhook. Only the challenge id is transmitted — grading uses server-side reference workflows.",
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
 		credentials: [{ name: "dngScoringWebhook", required: true }],
 		properties: [
 			{
 				displayName:
-					"This node submits your canvas to the DNG scoring service. The reference solution and grading rubric live on the server only — the exam can NOT be solved by reading local files.",
+					"This node submits your canvas to the DNG scoring service. Build with standard n8n nodes (Webhook, Set, OpenAI, …). The reference solution and grading rubric live on the server only.",
 				name: "dngSubmitNotice",
 				type: "notice",
 				default: "",
@@ -254,15 +206,15 @@ export class DngSubmitLevel implements INodeType {
 		}
 
 		const wf = getFullWorkflow(this);
-		const dngNodes: { id: string; type: string; data: Record<string, unknown> }[] = [];
+		const workflowNodes: { id: string; type: string; typeVersion: number; parameters: IDataObject }[] = [];
 		for (const n of wf.nodes) {
-			const c = n8nNodeToDng(n, (n.parameters ?? {}) as IDataObject);
-			if (c) dngNodes.push(c);
+			const c = n8nNodeToSubmission(n);
+			if (c) workflowNodes.push(c);
 		}
-		if (!dngNodes.length) {
+		if (!workflowNodes.length) {
 			throw new NodeOperationError(
 				this.getNode(),
-				'No DNG nodes found. Add DNG mirror nodes (e.g. "LLM", "Text") to this canvas and re-run.',
+				"No workflow nodes found. Add at least one native n8n node before DNG Submit Level and re-run.",
 			);
 		}
 		const edges = buildEdges(wf.connections);
@@ -301,7 +253,7 @@ export class DngSubmitLevel implements INodeType {
 				id: challengeId,
 			},
 			submission: {
-				workflow: { nodes: dngNodes, edges },
+				workflow: { nodes: workflowNodes, edges },
 				step_answers: stepAnswers,
 			},
 			client: {
@@ -318,11 +270,6 @@ export class DngSubmitLevel implements INodeType {
 			"x-dng-client-version": CLIENT_VERSION,
 		};
 
-		// Use returnFullResponse + ignoreHttpStatusErrors so that 4xx/5xx
-		// responses come back as data instead of opaque axios "Request failed
-		// with status code N" exceptions. This lets us surface the real error
-		// payload from the scoring webhook (e.g. unauthorized / token_required
-		// / token_not_recognised / unknown_challenge / invalid_body / …).
 		let response: { statusCode?: number; body?: unknown };
 		try {
 			response = (await this.helpers.httpRequest({
@@ -335,7 +282,6 @@ export class DngSubmitLevel implements INodeType {
 				ignoreHttpStatusErrors: true,
 			} as any)) as { statusCode?: number; body?: unknown };
 		} catch (e: unknown) {
-			// At this point we only get network-level / DNS / timeout errors.
 			const ex = e as { message?: string; cause?: { code?: string }; code?: string };
 			const reason = ex.cause?.code ?? ex.code ?? ex.message ?? String(e);
 			throw new NodeOperationError(
@@ -347,28 +293,31 @@ export class DngSubmitLevel implements INodeType {
 		const statusCode = Number(response?.statusCode ?? 0);
 		let bodyParsed: unknown = response?.body;
 		if (typeof bodyParsed === "string") {
-			try { bodyParsed = JSON.parse(bodyParsed); } catch { /* keep as raw string */ }
+			try {
+				bodyParsed = JSON.parse(bodyParsed);
+			} catch {
+				/* keep as raw string */
+			}
 		}
-		const bodyObj = (bodyParsed && typeof bodyParsed === "object" && !Array.isArray(bodyParsed))
-			? (bodyParsed as IDataObject)
-			: undefined;
+		const bodyObj =
+			bodyParsed && typeof bodyParsed === "object" && !Array.isArray(bodyParsed)
+				? (bodyParsed as IDataObject)
+				: undefined;
 
 		if (statusCode >= 400) {
 			const errCode = bodyObj?.error ? String(bodyObj.error) : "";
 			const detail = bodyObj?.message ? String(bodyObj.message) : "";
 			const summary = errCode
 				? `${errCode}${detail ? ` — ${detail}` : ""}`
-				: (typeof bodyParsed === "string" && bodyParsed
+				: typeof bodyParsed === "string" && bodyParsed
 					? bodyParsed
-					: JSON.stringify(bodyParsed ?? null));
+					: JSON.stringify(bodyParsed ?? null);
 			throw new NodeOperationError(
 				this.getNode(),
 				`Scoring webhook rejected submission (HTTP ${statusCode}): ${summary}`,
 			);
 		}
 
-		// Some scoring server paths return 200 with a JSON {error,message}
-		// payload — keep treating that as an error too.
 		if (bodyObj?.error) {
 			const err = String(bodyObj.error);
 			const detail = bodyObj.message ? String(bodyObj.message) : "";
@@ -378,15 +327,13 @@ export class DngSubmitLevel implements INodeType {
 			);
 		}
 
-		const j: IDataObject = bodyObj
-			? { ...bodyObj }
-			: ({ raw: bodyParsed } as IDataObject);
+		const j: IDataObject = bodyObj ? { ...bodyObj } : ({ raw: bodyParsed } as IDataObject);
 
 		return await this.prepareOutputData([
 			{
 				json: {
 					...j,
-					submitted_nodes: dngNodes.length,
+					submitted_nodes: workflowNodes.length,
 					submitted_edges: edges.length,
 					dng_package: DNG_NODE_PACKAGE,
 					client_version: CLIENT_VERSION,

@@ -1,0 +1,37 @@
+{
+  "id": "quick-summarize",
+  "title": "Quick HTTP Summary",
+  "description": "Build a workflow that accepts text via HTTP POST, normalizes the payload, summarizes it with an OpenAI chat completion, and returns JSON to the caller via Respond to Webhook.",
+  "difficulty": "Easy",
+  "category": "Fundamentals",
+  "time_limit_minutes": 10,
+  "available_node_types": [
+    "n8n-nodes-base.webhook",
+    "n8n-nodes-base.set",
+    "n8n-nodes-base.openAi",
+    "n8n-nodes-base.respondToWebhook"
+  ],
+  "available_node_displayNames": [
+    "Webhook",
+    "Set",
+    "OpenAI",
+    "Respond to Webhook"
+  ],
+  "exam_blueprint": [
+    {
+      "id": "step_design",
+      "title": "Design workflow skeleton",
+      "instructions": "Place Webhook, Set, OpenAI chat, and Respond to Webhook."
+    },
+    {
+      "id": "step_connections",
+      "title": "Connect execution flow",
+      "instructions": "Chain nodes in order from trigger to response."
+    },
+    {
+      "id": "step_quality",
+      "title": "Finalize configuration",
+      "instructions": "Configure HTTP method, field mapping, summarization prompt, and JSON response."
+    }
+  ]
+}

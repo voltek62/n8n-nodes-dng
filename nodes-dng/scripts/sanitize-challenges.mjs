@@ -5,7 +5,7 @@
  * Reads each full challenge from <repo>/server/server-challenges/<id>.json (the source
  * of truth, server-only, gitignored) and writes only the fields the candidate is allowed
  * to see into <repo>/nodes-dng/challenges/<id>.json. NEVER writes ideal_workflow,
- * grading_rubric or step required_nodes / critical_criteria.
+ * grading_rubric or step required_types / critical_criteria.
  *
  * If the server directory is absent (typical on a candidate machine that only cloned the
  * public repo), this script becomes a no-op so `npm run build` still works — the
@@ -42,7 +42,8 @@ const PUBLIC_TOP_FIELDS = [
 	"difficulty",
 	"category",
 	"time_limit_minutes",
-	"available_nodes",
+	"available_node_types",
+	"available_node_displayNames",
 ];
 
 function sanitizeStep(step) {
