@@ -14,7 +14,8 @@
     "n8n-nodes-base.googleSheets",
     "n8n-nodes-base.merge",
     "n8n-nodes-base.code",
-    "n8n-nodes-base.respondToWebhook"
+    "n8n-nodes-base.respondToWebhook",
+    "n8n-nodes-dng.dngSubmitLevel"
   ],
   "available_node_displayNames": [
     "Webhook",
@@ -25,23 +26,24 @@
     "Google Sheets",
     "Merge",
     "Code",
-    "Respond to Webhook"
+    "Respond to Webhook",
+    "DNG Submit Level"
   ],
   "exam_blueprint": [
     {
       "id": "step_design",
       "title": "Design workflow skeleton",
-      "instructions": "Include webhook intake, normalization, conditional routing, integrations, merge, code consolidation, and response."
+      "instructions": "Include webhook intake, normalization, conditional routing, integrations, merge, code consolidation, response, and DNG Submit Level as last required step."
     },
     {
       "id": "step_connections",
       "title": "Connect branches and merge",
-      "instructions": "Wire urgent vs standard branches into Merge, then Code, then Respond to Webhook."
+      "instructions": "Wire urgent vs standard branches into Merge, then Code, Respond to Webhook, then DNG Submit Level."
     },
     {
       "id": "step_quality",
       "title": "Finalize configuration",
-      "instructions": "Tune IF condition on priority, outbound URLs, sheet append, merge mode append, and consolidation logic."
+      "instructions": "Tune IF condition on priority, outbound URLs, sheet append, merge mode append, consolidation logic, and DNG Submit challengeId."
     }
   ]
 }

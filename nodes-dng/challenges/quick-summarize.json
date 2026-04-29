@@ -9,29 +9,31 @@
     "n8n-nodes-base.webhook",
     "n8n-nodes-base.set",
     "n8n-nodes-base.openAi",
-    "n8n-nodes-base.respondToWebhook"
+    "n8n-nodes-base.respondToWebhook",
+    "n8n-nodes-dng.dngSubmitLevel"
   ],
   "available_node_displayNames": [
     "Webhook",
     "Set",
     "OpenAI",
-    "Respond to Webhook"
+    "Respond to Webhook",
+    "DNG Submit Level"
   ],
   "exam_blueprint": [
     {
       "id": "step_design",
       "title": "Design workflow skeleton",
-      "instructions": "Place Webhook, Set, OpenAI chat, and Respond to Webhook."
+      "instructions": "Place Webhook, Set, OpenAI chat, Respond to Webhook, then DNG Submit Level as the last required step."
     },
     {
       "id": "step_connections",
       "title": "Connect execution flow",
-      "instructions": "Chain nodes in order from trigger to response."
+      "instructions": "Chain nodes in order from trigger to response, then DNG Submit Level."
     },
     {
       "id": "step_quality",
       "title": "Finalize configuration",
-      "instructions": "Configure HTTP method, field mapping, summarization prompt, and JSON response."
+      "instructions": "Configure HTTP method, field mapping, summarization prompt, JSON response, and DNG Submit challengeId."
     }
   ]
 }

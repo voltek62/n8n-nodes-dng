@@ -14,11 +14,6 @@ import { NodeConnectionType, NodeOperationError } from "n8n-workflow";
 const DNG_NODE_PACKAGE = "n8n-nodes-dng";
 const CLIENT_VERSION = "3.0.0";
 
-function isDngSubmitNodeType(t: string): boolean {
-	const s = t.toLowerCase();
-	return s.includes("dngsubmitlevel") || s.includes("dngsubmitl");
-}
-
 function buildEdges(connections: IConnections | IDataObject | undefined | null): { source: string; target: string }[] {
 	const out: { source: string; target: string }[] = [];
 	if (!connections || typeof connections !== "object") return out;
@@ -55,7 +50,7 @@ function n8nNodeToSubmission(
 	node: INode,
 ): { id: string; type: string; typeVersion: number; parameters: IDataObject } | null {
 	const t = String(node.type ?? "");
-	if (!t || isDngSubmitNodeType(t)) {
+	if (!t) {
 		return null;
 	}
 	const name = String(node.name ?? "node");

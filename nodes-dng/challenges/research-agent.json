@@ -12,7 +12,8 @@
     "@n8n/n8n-nodes-langchain.agent",
     "@n8n/n8n-nodes-langchain.lmChatOpenAi",
     "n8n-nodes-base.aggregate",
-    "n8n-nodes-base.respondToWebhook"
+    "n8n-nodes-base.respondToWebhook",
+    "n8n-nodes-dng.dngSubmitLevel"
   ],
   "available_node_displayNames": [
     "Webhook",
@@ -21,23 +22,24 @@
     "AI Agent",
     "OpenAI Chat Model",
     "Aggregate",
-    "Respond to Webhook"
+    "Respond to Webhook",
+    "DNG Submit Level"
   ],
   "exam_blueprint": [
     {
       "id": "step_design",
       "title": "Design workflow skeleton",
-      "instructions": "Include webhook, validation/expansion Code, HTTP fetch, parsing Code, LangChain agent + chat model, aggregate, and response."
+      "instructions": "Include webhook, validation/expansion Code, HTTP fetch, parsing Code, LangChain agent + chat model, aggregate, response, and DNG Submit Level as last required step."
     },
     {
       "id": "step_connections",
       "title": "Connect execution flow",
-      "instructions": "Wire fetch and parse, agent chain, aggregation, and HTTP response."
+      "instructions": "Wire fetch and parse, agent chain, aggregation, HTTP response, then DNG Submit Level."
     },
     {
       "id": "step_quality",
       "title": "Finalize configuration",
-      "instructions": "Tune validation, URLs, prompts, and aggregation fields."
+      "instructions": "Tune validation, URLs, prompts, aggregation fields, and DNG Submit challengeId."
     }
   ]
 }
