@@ -3,6 +3,9 @@
 .vscode/
 .idea/
 
+# npm — never commit tokens
+.npmrc
+
 # Node
 node_modules/
 nodes-dng/node_modules/
