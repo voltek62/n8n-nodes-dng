@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-dng",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DraftNGoal community node pack for n8n: 41 DNG Builder mirror nodes + DNG Submit Level. Build a workflow on the canvas and submit it to the official DraftNGoal cloud scoring webhook.",
   "main": "index.js",
   "types": "index.d.ts",

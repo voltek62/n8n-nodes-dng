@@ -318,41 +318,69 @@ export class DngSubmitLevel implements INodeType {
 			"x-dng-client-version": CLIENT_VERSION,
 		};
 
-		let res: unknown;
+		// Use returnFullResponse + ignoreHttpStatusErrors so that 4xx/5xx
+		// responses come back as data instead of opaque axios "Request failed
+		// with status code N" exceptions. This lets us surface the real error
+		// payload from the scoring webhook (e.g. unauthorized / token_required
+		// / token_not_recognised / unknown_challenge / invalid_body / …).
+		let response: { statusCode?: number; body?: unknown };
 		try {
-			res = await this.helpers.httpRequest({
+			response = (await this.helpers.httpRequest({
 				method: "POST",
 				url,
 				headers,
 				body,
 				timeout: 30_000,
-			} as any);
+				returnFullResponse: true,
+				ignoreHttpStatusErrors: true,
+			} as any)) as { statusCode?: number; body?: unknown };
 		} catch (e: unknown) {
-			const ex = e as {
-				message?: string;
-				error?: { message?: string; description?: string };
-				statusCode?: number;
-			};
-			const msg = ex.error?.message ?? ex.error?.description ?? ex.message ?? String(e);
+			// At this point we only get network-level / DNS / timeout errors.
+			const ex = e as { message?: string; cause?: { code?: string }; code?: string };
+			const reason = ex.cause?.code ?? ex.code ?? ex.message ?? String(e);
 			throw new NodeOperationError(
 				this.getNode(),
-				`Scoring webhook call failed${ex.statusCode ? ` (HTTP ${ex.statusCode})` : ""}: ${msg}`,
+				`Scoring webhook unreachable at ${url}: ${reason}`,
 			);
 		}
 
-		const j =
-			typeof res === "object" && res !== null && !Array.isArray(res)
-				? { ...(res as IDataObject) }
-				: ({ raw: res } as IDataObject);
+		const statusCode = Number(response?.statusCode ?? 0);
+		let bodyParsed: unknown = response?.body;
+		if (typeof bodyParsed === "string") {
+			try { bodyParsed = JSON.parse(bodyParsed); } catch { /* keep as raw string */ }
+		}
+		const bodyObj = (bodyParsed && typeof bodyParsed === "object" && !Array.isArray(bodyParsed))
+			? (bodyParsed as IDataObject)
+			: undefined;
 
-		if (j && typeof j === "object" && (j as IDataObject).error) {
-			const err = String((j as IDataObject).error ?? "scoring_error");
-			const detail = String((j as IDataObject).message ?? "");
+		if (statusCode >= 400) {
+			const errCode = bodyObj?.error ? String(bodyObj.error) : "";
+			const detail = bodyObj?.message ? String(bodyObj.message) : "";
+			const summary = errCode
+				? `${errCode}${detail ? ` — ${detail}` : ""}`
+				: (typeof bodyParsed === "string" && bodyParsed
+					? bodyParsed
+					: JSON.stringify(bodyParsed ?? null));
+			throw new NodeOperationError(
+				this.getNode(),
+				`Scoring webhook rejected submission (HTTP ${statusCode}): ${summary}`,
+			);
+		}
+
+		// Some scoring server paths return 200 with a JSON {error,message}
+		// payload — keep treating that as an error too.
+		if (bodyObj?.error) {
+			const err = String(bodyObj.error);
+			const detail = bodyObj.message ? String(bodyObj.message) : "";
 			throw new NodeOperationError(
 				this.getNode(),
 				`Scoring server rejected submission: ${err}${detail ? ` — ${detail}` : ""}`,
 			);
 		}
+
+		const j: IDataObject = bodyObj
+			? { ...bodyObj }
+			: ({ raw: bodyParsed } as IDataObject);
 
 		return await this.prepareOutputData([
 			{
