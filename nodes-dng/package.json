@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-dng",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "DraftNGoal community node pack for n8n: ships only DNG Submit Level + DNG Scoring Webhook credential. Candidates build exam workflows with native n8n nodes and submit to the official cloud scorer.",
   "main": "index.js",
   "types": "index.d.ts",
